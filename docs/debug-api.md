@@ -19,22 +19,22 @@ The events are:
 
 The following example shows how to use global `window` events in browsers to implement simple debug output.  The `event` object has the following extra properties:
 
-* `event.reason` - the rejection reason (typically an `Error` instance)
-* `event.key` - opaque unique key representing the promise that was rejected.  This key can be used to correlate corresponding `unhandledRejection` and `rejectionHandled` events for the same promise.
+* `event.detail.reason` - the rejection reason (typically an `Error` instance)
+* `event.detail.key` - opaque unique key representing the promise that was rejected.  This key can be used to correlate corresponding `unhandledRejection` and `rejectionHandled` events for the same promise.
 
 ```js
 window.addEventListener('unhandledRejection', function(event) {
 	// Calling preventDefault() suppresses when.js's default rejection logging
 	// in favor of your own.
 	event.preventDefault();
-	reportRejection(event.reason, event.key);
+	reportRejection(event.detail.reason, event.detail.key);
 }, false);
 
 window.addEventListener('rejectionHandled', function(event) {
 	// Calling preventDefault() suppresses when.js's default rejection logging
 	// in favor of your own.
 	event.preventDefault();
-	reportHandled(event.key);
+	reportHandled(event.detail.key);
 }, false);
 
 function reportRejection(error, key) {

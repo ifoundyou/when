@@ -18,7 +18,7 @@ buster.testCase('global rejection events', {
 		},
 
 		'should emit unhandledRejection': function(done) {
-			if(typeof process === 'undefined') {
+			if(typeof window !== 'undefined') {
 				buster.assert(true);
 				return;
 			}
@@ -34,7 +34,7 @@ buster.testCase('global rejection events', {
 		},
 
 		'should emit rejectionHandled': function(done) {
-			if(typeof process === 'undefined') {
+			if(typeof window !== 'undefined') {
 				buster.assert(true);
 				return;
 			}
@@ -71,7 +71,7 @@ buster.testCase('global rejection events', {
 			function listener(e) {
 				window.removeEventListener('unhandledRejection', listener, false);
 				e.preventDefault();
-				buster.assert.same(e, sentinel);
+				buster.assert.same(e.detail.reason, sentinel);
 				done();
 			}
 
@@ -90,13 +90,13 @@ buster.testCase('global rejection events', {
 			var key;
 			function unhandled(e) {
 				window.removeEventListener('unhandledRejection', unhandled, false);
-				buster.assert.same(e.reason, sentinel);
-				key = e.key;
+				buster.assert.same(e.detail.reason, sentinel);
+				key = e.detail.key;
 			}
 
 			function handled(e) {
 				window.removeEventListener('rejectionHandled', handled, false);
-				buster.assert.same(e.key, key);
+				buster.assert.same(e.detail.key, key);
 				done();
 			}
 
