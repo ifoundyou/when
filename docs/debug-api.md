@@ -17,14 +17,23 @@ The events are:
 
 ## Browser window events
 
-The following example shows how to use global `process` events in Node.js to implement simple debug output:
+The following example shows how to use global `window` events in browsers to implement simple debug output.  The `event` object has the following extra properties:
+
+* `event.reason` - the rejection reason (typically an `Error` instance)
+* `event.key` - opaque unique key representing the promise that was rejected.  This key can be used to correlate corresponding `unhandledRejection` and `rejectionHandled` events for the same promise.
 
 ```js
 window.addEventListener('unhandledRejection', function(event) {
+	// Calling preventDefault() suppresses when.js's default rejection logging
+	// in favor of your own.
+	event.preventDefault();
 	reportRejection(event.reason, event.key);
 }, false);
 
 window.addEventListener('rejectionHandled', function(event) {
+	// Calling preventDefault() suppresses when.js's default rejection logging
+	// in favor of your own.
+	event.preventDefault();
 	reportHandled(event.key);
 }, false);
 
@@ -41,23 +50,27 @@ function reportHandled(key) {
 
 ## Node global process events
 
-The following example shows how to use global `process` events in Node.js to implement simple debug output:
+The following example shows how to use global `process` events in Node.js to implement simple debug output.  The parameters passed to the `process` event handlers:
+
+* `reason` - the rejection reason (typically an `Error` instance)
+* `key` - opaque unique key representing the promise that was rejected.  This key can be used to correlate corresponding `unhandledRejection` and `rejectionHandled` events for the same promise.
+
 
 ```js
-process.on('unhandledRejection', function(error, rejection) {
-	reportRejection(error, rejection);
+process.on('unhandledRejection', function(reason, key) {
+	reportRejection(reason, key);
 });
 
-process.on('rejectionHandled', function(rejection) {
-	reportHandled(rejection);
+process.on('rejectionHandled', function(key) {
+	reportHandled(key);
 });
 
-function reportRejection(error, rejection) {
+function reportRejection(error, key) {
 	// Implement whatever logic your application requires
 	// Log or record error state, etc.
 }
 
-function reportHandled(rejection) {
+function reportHandled(key) {
 	// Implement whatever logic your application requires
 	// Log that error has been handled, etc.
 }
